@@ -30,7 +30,7 @@ jobs:
       - name: Generate Android Folder
         run: |
           if [ ! -d "android" ]; then
-            npx expo prebuild --platform android --no-install
+            EXPO_NO_TELEMETRY=1 npx expo prebuild --platform android --no-install --clean
           fi
 
       - name: Build Debug APK
