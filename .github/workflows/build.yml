@@ -27,14 +27,17 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Build Android APK
+      - name: Generate Android Folder if Missing
         run: |
           if [ ! -d "android" ]; then
-            npx expo prebuild --platform android
+            npx --yes expo prebuild --platform android --clean
           fi
+
+      - name: Build Debug APK
+        run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
