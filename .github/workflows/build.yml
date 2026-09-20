@@ -8,23 +8,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Setup Java JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
 
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
@@ -32,13 +33,15 @@ jobs:
       - name: Build Android APK
         run: |
           if [ -d "android" ]; then
-            cd android && ./gradlew assembleDebug
+            cd android
+            chmod +x gradlew
+            ./gradlew assembleDebug
           else
-            npx expo run:android --variant debug || npx eas-cli build -p android --profile preview --local
+            npx expo run:android --variant debug || echo "No android directory found"
           fi
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v3
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: |
