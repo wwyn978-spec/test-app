@@ -21,7 +21,7 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Install Dependencies
@@ -29,18 +29,15 @@ jobs:
 
       - name: Build Android APK
         run: |
-          if [ -d "android" ]; then
-            cd android
-            chmod +x gradlew
-            ./gradlew assembleDebug
-          else
-            npx expo run:android --variant debug || echo "No android directory found"
+          if [ ! -d "android" ]; then
+            npx expo prebuild --platform android
           fi
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: |
-            android/app/build/outputs/apk/debug/*.apk
-            *.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
