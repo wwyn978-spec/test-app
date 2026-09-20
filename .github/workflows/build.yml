@@ -2,7 +2,8 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -21,17 +22,14 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
 
       - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
       - name: Generate Android Folder
-        run: |
-          if [ ! -d "android" ]; then
-            EXPO_NO_TELEMETRY=1 npx expo prebuild --platform android --no-install --clean
-          fi
+        run: npx expo prebuild --platform android --clean
 
       - name: Build Debug APK
         run: |
@@ -42,5 +40,5 @@ jobs:
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
+          name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
