@@ -1,13 +1,11 @@
 name: Build APK with EAS
-
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ "main" ]
 
 jobs:
   build:
+    name: Build with EAS
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -16,18 +14,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
           expo-version: latest
           eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
         run: npm install
 
       - name: Build with EAS
         run: eas build --platform android --profile preview --non-interactive
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
