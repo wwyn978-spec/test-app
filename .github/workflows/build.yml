@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build APK with EAS
 
 on:
   push:
@@ -9,9 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -19,27 +18,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          expo-version: latest
+          eas-version: latest
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Generate Android Folder
-        run: npx expo prebuild --platform android --clean
-
-      - name: Build Debug APK with Bundle
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew bundleDebugJsAndAssets
-          ./gradlew assembleDebug --no-daemon
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Build with EAS
+        run: eas build --platform android --profile preview --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
