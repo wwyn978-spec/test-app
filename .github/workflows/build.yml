@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Setup Java JDK
         uses: actions/setup-java@v4
@@ -27,10 +27,10 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Generate Android Folder if Missing
+      - name: Generate Android Folder
         run: |
           if [ ! -d "android" ]; then
-            npx --yes expo prebuild --platform android --clean
+            npx expo prebuild --platform android --no-install
           fi
 
       - name: Build Debug APK
