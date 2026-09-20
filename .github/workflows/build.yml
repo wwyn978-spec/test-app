@@ -1,0 +1,46 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build Android APK
+        run: |
+          if [ -d "android" ]; then
+            cd android && ./gradlew assembleDebug
+          else
+            npx expo run:android --variant debug || npx eas-cli build -p android --profile preview --local
+          fi
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug-apk
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            *.apk
